@@ -182,7 +182,7 @@ export default function endpoint(url, parent) {
             if (!headers['Content-Type']) {
                 headers['Content-Type'] = 'application/json;charset=UTF-8';
             }
-            var nextConfig = _generateRequestConfig('post', url, {}}, headers, data);
+            var nextConfig = _generateRequestConfig('post', url, {}, headers, data);
             nextConfig.isFormData = true;
 
             return config._parent().request(

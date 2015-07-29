@@ -3,24 +3,29 @@ import assign from 'object-assign';
 function interceptorCallback(interceptors, method, url, isResponseInterceptor, isFormData) {
     isResponseInterceptor = isResponseInterceptor !== undefined ? !!isResponseInterceptor : false;
 
-    return function(data, headers) {
-        if (!isFormData) {
+    return function(data, headers, isFormData) {
+        if (isFormData) {
+            return data;
+        }
+        // if (!isFormData) {
             if (isResponseInterceptor) {
                 try {
                     data = JSON.parse(data);
                 } catch (e) {}
             }
-        }
+        // }
 
         for (var i in interceptors) {
             data = interceptors[i](data, headers, method, url);
         }
 
-        if (!isResponseInterceptor) {
-            try {
-                data = JSON.stringify(data);
-            } catch (e) {}
-        }
+        // if (!isFormData) {
+            if (!isResponseInterceptor) {
+                try {
+                    data = JSON.stringify(data);
+                } catch (e) {}
+            }
+        // }
 
         return data;
     };

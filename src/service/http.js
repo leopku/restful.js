@@ -1,38 +1,35 @@
 import assign from 'object-assign';
 
-function interceptorCallback(interceptors, method, url, isResponseInterceptor, isFormData) {
+function interceptorCallback(interceptors, method, url, isResponseInterceptor) {
     isResponseInterceptor = isResponseInterceptor !== undefined ? !!isResponseInterceptor : false;
 
-    return function(data, headers, isFormData) {
-        console.log('[isFormData]' + isFormData)
-        if (isFormData) {
-            return data;
+    return function(data, headers) {
+        if (isResponseInterceptor) {
+            try {
+                data = JSON.parse(data);
+            } catch (e) {}
         }
-        // if (!isFormData) {
-            if (isResponseInterceptor) {
-                try {
-                    data = JSON.parse(data);
-                } catch (e) {}
-            }
-        // }
 
         for (var i in interceptors) {
             data = interceptors[i](data, headers, method, url);
         }
 
-        // if (!isFormData) {
-            if (!isResponseInterceptor) {
-                try {
-                    data = JSON.stringify(data);
-                } catch (e) {}
-            }
-        // }
+        if (!isResponseInterceptor) {
+            try {
+                data = JSON.stringify(data);
+            } catch (e) {}
+        }
 
         return data;
     };
 }
 
-
+function interceptorFormDataCallback(interceptors, method, url, isResponseInterceptor) {
+    isResponseInterceptor = isResponseInterceptor !== undefined ? !!isResponseInterceptor : false;
+    return function(data, headers) {
+        return data;
+    };
+}
 
 export default function http(httpBackend) {
     var model = {
@@ -48,7 +45,11 @@ export default function http(httpBackend) {
 
         request(method, config) {
             if (['post', 'put', 'patch'].indexOf(config.method) !== -1) {
-                config.transformRequest = [interceptorCallback(config.requestInterceptors || [], config.method, config.url, false, config.isFormData)];
+                if (config.isFormData) {
+                    config.transformRequest = [interceptorFormDataCallback(config.requestInterceptors || [], config.method, config.url)];
+                } else{
+                    config.transformRequest = [interceptorCallback(config.requestInterceptors || [], config.method, config.url)];
+                }
                 delete config.requestInterceptors;
             }
 

@@ -176,6 +176,19 @@ export default function endpoint(url, parent) {
             );
         },
 
+        postParams(params, headers){
+            headers = headers || {};
+            if (!headers['Content-Type']) {
+                headers['Content-Type'] = 'application/json;charset=UTF-8';
+            }
+            var nextConfig = _generateRequestConfig('post', url, params, headers, {});
+
+            return config._parent().request(
+                nextConfig.method,
+                nextConfig
+            );
+        },
+
         put(data, headers) {
             headers = headers || {};
             if (!headers['Content-Type']) {

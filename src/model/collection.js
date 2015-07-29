@@ -60,6 +60,14 @@ export default function collection(name, parent) {
                 });
         },
 
+        postParams(params, headers){
+            return refEndpoint
+                .postParams(params, headers)
+                .then(function(serverResponse) {
+                    return responseBuilder(serverResponse);
+                });
+        },
+
         put(id, data, headers) {
             return refEndpointFactory(id)
                 .put(data, headers)

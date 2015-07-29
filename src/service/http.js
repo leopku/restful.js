@@ -4,6 +4,7 @@ function interceptorCallback(interceptors, method, url, isResponseInterceptor, i
     isResponseInterceptor = isResponseInterceptor !== undefined ? !!isResponseInterceptor : false;
 
     return function(data, headers, isFormData) {
+        console.log('[isFormData]' + isFormData)
         if (isFormData) {
             return data;
         }

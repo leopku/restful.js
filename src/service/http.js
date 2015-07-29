@@ -1,13 +1,15 @@
 import assign from 'object-assign';
 
-function interceptorCallback(interceptors, method, url, isResponseInterceptor) {
+function interceptorCallback(interceptors, method, url, isResponseInterceptor, isFormData) {
     isResponseInterceptor = isResponseInterceptor !== undefined ? !!isResponseInterceptor : false;
 
     return function(data, headers) {
-        if (isResponseInterceptor) {
-            try {
-                data = JSON.parse(data);
-            } catch (e) {}
+        if (!isFormData) {
+            if (isResponseInterceptor) {
+                try {
+                    data = JSON.parse(data);
+                } catch (e) {}
+            }
         }
 
         for (var i in interceptors) {
@@ -24,6 +26,8 @@ function interceptorCallback(interceptors, method, url, isResponseInterceptor) {
     };
 }
 
+
+
 export default function http(httpBackend) {
     var model = {
         backend: httpBackend,
@@ -38,7 +42,7 @@ export default function http(httpBackend) {
 
         request(method, config) {
             if (['post', 'put', 'patch'].indexOf(config.method) !== -1) {
-                config.transformRequest = [interceptorCallback(config.requestInterceptors || [], config.method, config.url)];
+                config.transformRequest = [interceptorCallback(config.requestInterceptors || [], config.method, config.url, false, config.isFormData)];
                 delete config.requestInterceptors;
             }
 

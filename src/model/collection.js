@@ -60,9 +60,9 @@ export default function collection(name, parent) {
                 });
         },
 
-        postParams(params, headers){
+        postAsForm(data, headers){
             return refEndpoint
-                .postParams(params, headers)
+                .postAsForm(data, headers)
                 .then(function(serverResponse) {
                     return responseBuilder(serverResponse);
                 });

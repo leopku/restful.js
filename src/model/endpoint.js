@@ -9,6 +9,7 @@ export default function endpoint(url, parent) {
             fullResponseInterceptors: [],
             requestInterceptors: [],
             responseInterceptors:[],
+            isFormData: false
         };
 
     /**
@@ -176,12 +177,13 @@ export default function endpoint(url, parent) {
             );
         },
 
-        postParams(params, headers){
+        postAsForm(data, headers){
             headers = headers || {};
             if (!headers['Content-Type']) {
                 headers['Content-Type'] = 'application/json;charset=UTF-8';
             }
-            var nextConfig = _generateRequestConfig('post', url, params, headers, {});
+            var nextConfig = _generateRequestConfig('post', url, data, headers, {});
+            nextConfig.isFormData = true;
 
             return config._parent().request(
                 nextConfig.method,
